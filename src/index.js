@@ -1,39 +1,27 @@
+import FirstLevel from './scenes/FirstLevel';
+import MyGame from './scenes/MyGame';
 import Phaser from 'phaser';
-import logoImg from './assets/logo.png';
 
-class MyGame extends Phaser.Scene
-{
-    constructor ()
-    {
-        super();
-    }
-
-    preload ()
-    {
-        this.load.image('logo', logoImg);
-    }
-      
-    create ()
-    {
-        const logo = this.add.image(400, 150, 'logo');
-      
-        this.tweens.add({
-            targets: logo,
-            y: 450,
-            duration: 2000,
-            ease: "Power2",
-            yoyo: true,
-            loop: -1
-        });
-    }
-}
+const DEFAULT_WIDTH = 1280;
+const DEFAULT_HEIGHT = 720;
 
 const config = {
     type: Phaser.AUTO,
     parent: 'phaser-example',
-    width: 800,
-    height: 600,
-    scene: MyGame
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: DEFAULT_WIDTH,
+        height: DEFAULT_HEIGHT
+    },
+    physics: {
+        default: 'arcade',
+        arcade: { debug: false }
+    },
+    backgroundColor: '#ffffff',
+    scene: FirstLevel
 };
 
+// eslint-disable-next-line no-unused-vars
 const game = new Phaser.Game(config);
+console.log(game);
