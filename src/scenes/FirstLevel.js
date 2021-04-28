@@ -1,91 +1,55 @@
 import Phaser from 'phaser';
-import { degreesToRadians } from '../utils';
+import { setupDragObj } from '../utils';
+import Laser from '../entities/Laser';
+import {
+  UP, DOWN, LEFT, RIGHT,
+} from '../constants';
 
-export default class FirstLevel extends Phaser.Scene
-{
-    constructor ()
-    {
-        super({
-            key: 'level-1'
-        });
+export default class FirstLevel extends Phaser.Scene {
+  constructor() {
+    super({
+      key: 'level-1',
+    });
 
-        const block = null;
+    this.block = null;
+    this.graphics = null;
+    this.laser = null;
+    this.label = null;
+    this.mouseCoords = null;
+  }
+
+  create() {
+    this.label = this.add.text(500, 0, '', { color: '#000000', fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
+
+    this.graphics = this.add.graphics({ lineStyle: { width: 4, color: 0xaa00aa } });
+
+    this.block = this.add.rectangle(300, 300, 48, 24, 0xff0000);
+
+    setupDragObj(this, this.block);
+
+    this.laser = new Laser(this, 100, 8, LEFT, this.graphics);
+
+    this.laser.setAimLineEndpoint(450, 400);
+  }
+
+  update() {
+    this.laserbeam = this.laser.getBeam();
+    this.graphics.clear();
+    this.graphics.strokeLineShape(this.laserbeam);
+    const pointer = this.input.activePointer;
+
+    this.label.setText([
+      `x: ${Phaser.Math.FloorTo(pointer.worldX)}`,
+      `y: ${Phaser.Math.FloorTo(pointer.worldY)}`,
+      `isDown: ${pointer.isDown}`,
+      `rightButtonDown: ${pointer.rightButtonDown()}`,
+    ]);
+
+    // check if laser interescts with block
+    if (Phaser.Geom.Intersects.LineToRectangle()) {
+
     }
 
-
-    preload ()
-    {
-        // this.load.image('logo', logoImg);
-    }
-      
-    create ()
-    {
-        //create bouncy block to test laser physics
-
-        this.block = this.add.rectangle(300, 300, 24, 24, 0xff0000);
-        // this.block = this.physics.add.rectangle(300, 300, 24, 24);
-        // this.physics.add.existing(this.block, false);
-        // this.block.body.setCollideWorldBounds();
-
-        // this.block.body.setBounceY(4);
-        // const blockGroup = this.physics.add.group({
-        //     classType: Phaser.GameObjects.Rectangle,
-        //     bounceX: 1,
-        //     bouncY: 1,
-        //     collideWorldBounds: true
-        // });
-
-        // blockGroup.create(this, 100, 200, 24, 24, 0x000000);
-        // blockGroup.create(300, 400);
-        // blockGroup.create(100, 200);
-        // blockGroup.create(600, 300);
-
-        // console.log(blockGroup);
-
-
-        // console.log(block);
-        this.createLaser(64, 64);
-        // this.input.on('pointermove', (pointer) => {
-        //     // console.log(pointer.x, pointer.y);
-        // });
-    }
-
-    update ()
-    {
-    }
-
-    createLaser (pointX, pointY) 
-    {
-        const square = this.add.rectangle(pointX, pointY, 16, 16, 0x000000);
-        const centerOfSquare = square.getCenter();
-        console.log(centerOfSquare);
-        const line = new Phaser.Geom.Line(
-            centerOfSquare.x, 
-            centerOfSquare.y, 
-            centerOfSquare.x, 
-            this.cameras.main.centerX 
-
-            /*
-             * Could possibly figure out a way to sense the closest 
-             * Point in front of laser that laser initially hits.
-             * We'd replace the last two params with that value.
-             */
-
-        );
-        
-        Phaser.Geom.Line.SetToAngle(line, centerOfSquare.x, centerOfSquare.y, degreesToRadians(90), 1000);
-
-        const graphics = this.add.graphics({
-            lineStyle: {
-                width: 4,
-                color: 0xaa00aa
-            }
-        });
-
-        graphics.strokeLineShape(line);
-
-        console.log(line);
-    }
-
-
+    this.laser.setAimLineEndpoint(pointer.worldX, pointer.worldY);
+  }
 }
