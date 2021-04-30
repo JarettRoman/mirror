@@ -27,9 +27,7 @@ export default class FirstLevel extends Phaser.Scene {
 
     setupDragObj(this, this.block);
 
-    this.laser = new Laser(this, 100, 8, LEFT, this.graphics);
-
-    this.laser.setAimLineEndpoint(450, 400);
+    this.laser = new Laser(this, 400, 400, LEFT, this.graphics);
   }
 
   update() {
@@ -46,10 +44,17 @@ export default class FirstLevel extends Phaser.Scene {
     ]);
 
     // check if laser interescts with block
-    if (Phaser.Geom.Intersects.LineToRectangle()) {
-
+    if (Phaser.Geom.Intersects.LineToRectangle(this.laserbeam, this.block.getBounds())) {
+      // grab intersection point
+      const intersection = Phaser.Geom.Intersects.GetLineToRectangle(this.laserbeam, this.block.getBounds());
+      // set endpoint of laser to be where the line intersects
+      if (intersection) {
+        this.laser.setAimLineEndpoint(intersection[0].x, intersection[0].y);
+        this.graphics.clear();
+        this.graphics.strokeLineShape(this.laserbeam);
+      }
+    } else {
+      this.laser.resetAimLineEndpoint();
     }
-
-    this.laser.setAimLineEndpoint(pointer.worldX, pointer.worldY);
   }
 }

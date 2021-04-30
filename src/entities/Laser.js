@@ -9,16 +9,14 @@ export default class Laser {
     this.y = y;
     this.gfx = gfx;
 
-    console.log('created laser');
-
     this.square = this.scene.add.rectangle(x, y, 16, 16, 0x000000);
     this.centerOfSquare = this.square.getCenter();
 
     this.aimLine = new Phaser.Geom.Line(
       this.centerOfSquare.x,
       this.centerOfSquare.y,
-      this.centerOfSquare.x,
-      99999,
+      0,
+      0,
     );
 
     Phaser.Geom.Line.SetToAngle(
@@ -29,6 +27,8 @@ export default class Laser {
       999,
     );
 
+    this.originalEndpoint = this.aimLine.getPointB();
+
     this.gfx.strokeLineShape(this.aimLine);
   }
 
@@ -37,11 +37,17 @@ export default class Laser {
   }
 
   setAimLineEndpoint(x, y) {
-    this.aimLine.setTo(
-      this.centerOfSquare.x,
-      this.centerOfSquare.y,
-      x,
-      y,
-    );
+    if (x && y) {
+      this.aimLine.setTo(
+        this.centerOfSquare.x,
+        this.centerOfSquare.y,
+        x,
+        y,
+      );
+    }
+  }
+
+  resetAimLineEndpoint() {
+    this.setAimLineEndpoint(this.originalEndpoint.x, this.originalEndpoint.y);
   }
 }
